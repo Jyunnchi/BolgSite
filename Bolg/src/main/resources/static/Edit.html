@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Blogs</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.14/vue.min.js"></script>
+
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="css/base.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/theme-chalk/index.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/index.min.js"></script>
+<style>
+    .el-header .el-col{
+        /* border:3px solid black; */
+        height: 70px;
+    }
+    .el-header{
+        background-color: white;
+        border-bottom:3px solid black;
+        border-top:3px solid black;
+    }
+    .el-header a{
+        display: block;
+        margin: 20px 20px auto 52px;
+        /* border:3px solid green; */
+        height: 25px;
+        width: 25px;
+    }
+    .el-main #row_title .el-col{
+        height:150px;
+    }
+    i{
+        display: block;
+    }
+
+    #app{
+        width: 100vw;
+        height: 100vh;
+        /* border:1px solid gold; */
+        clear: both;
+    }
+    #logo{
+        float: left;
+        /* border:1px solid gold; */
+    }
+    #text_title{
+        font-family:'宋体';
+        font-size: 40px;
+        font-weight:bolder;
+        margin-top: 40px;
+    }
+    .el-row{
+        margin-top: 10px;
+    }
+    #submitBtn :hover{
+        color: black !important;
+        font-weight: bold !important;
+    }
+    #submitBtn :active{
+        color: black !important; 
+        font-weight: bold !important;
+    }
+    #submitBtn :focus{
+        color: black !important;
+        font-weight: bold !important;
+    }
+</style>
+</head>
+<body>
+<div id="app">
+    <div id="main"  style="height: 100%; overflow-y: auto;">
+        <el-container>
+            <el-header height="90px">
+               <el-row>
+                   <el-col :span="6"><a href="blogs.html" title="主页" style="margin: 0 !important;"><div id="logo">
+                       <img src="imgs/ZJNU.jpg">
+                   </div></a></el-col>
+                   <el-col :span="12"><div id="searchText">
+                       <el-input  placeholder="发布文章" style="margin-top: 20px" :disabled="true"></el-input>
+                   </div></el-col>
+                   <el-col :span="3">
+                    <a href="PersonalCenter.html" title="个人中心"><img src="imgs/个人中心icon.png"></a>
+                    </el-col>
+                    <el-col :span="3">
+                        <a href="Edit.html" title="发布文章"><img src="imgs/发布icon.png"> </a>
+                    </el-col>
+               </el-row>
+            </el-header>
+            <el-main style=" background-color: rgb(248, 249, 249);">
+                <el-row id="row_title">
+                    <el-col :span="12" >
+                        <div id="text_title" >
+                            发布一篇公开文章
+                        </div>                        
+                    </el-col>
+                    <el-col :span="12">
+                        <img src="imgs/questionLogo.png" style="float: right;">
+                    </el-col>
+                </el-row>
+                <el-row id="row_tips">
+                    <el-col :span="17">
+                        <div id="tip_card">
+                            <el-card class="box-card" style="background-color:rgb(181, 233, 254);border: 1px solid black;">
+                                <h2 style="margin: 5px;">写一篇好文章</h2>
+                                <p style="margin: 5px;">您已准备好发表一篇公开文章，此表单将帮助您完成整个过程。</p>
+                                <h4 style="margin: 5px;">步骤</h4>
+                                <div style="margin: 5px;">
+                                    <ul style="list-style-type:circle !important;padding-left: 25px;list-style-position:inside">
+                                        <li>● 用一行标题总结您的文章。</li>
+                                        <li>● 将文章内容输入。</li>
+                                        <li>● 查看您的文章并将其发布到网站。</li>
+                                    </ul>
+                                </div>
+                            </el-card>                              
+                        </div>
+                    </el-col>
+                </el-row>
+                <el-row id="row_topic">
+                    <el-col :span="17">
+                        <div id="title_card">
+                            <el-card class="box-card" style="background-color:white;border: 1px solid black;">
+                                <h4 style="margin: 5px;">标题</h4>
+                                <span style="margin: 5px; font-size: smaller; font-weight: lighter;">要精炼一些~确切地揭示文章的内容。</span>
+                                <el-input v-model="title" placeholder="请输入标题..." style="margin: 5px;"></el-input>
+                            </el-card>
+                        </div>
+                    </el-col>
+                </el-row>
+                <el-row id="row_content">
+                    <el-col :span="17">
+                        <div id="content_card">
+                            <el-card class="box-card" style="background-color:white;border: 1px solid black;">
+                                <h4 style="margin: 5px;">文章内容</h4>
+                                <span style="margin: 5px; font-size: smaller; font-weight: lighter;">将你的文章写入吧！！！</span>
+                                <el-input
+                                            type="textarea"
+                                            :autosize="{ minRows: 8, maxRows: 20}"
+                                            placeholder="请输入内容..."
+                                            v-model="content"
+                                            style="margin: 5px"
+                                            >
+                                </el-input>
+                            </el-card>
+                        </div>
+                    </el-col>
+                </el-row>
+                <el-button id="submitBtn" @click="submit()" style="margin-top: 30px; background-color: rgb(248, 249, 249);color: burlywood;border: 2px solid burlywood;" type="warning" plain>发表</el-button>
+            </el-main>
+        </el-container>
+    </div>
+</div>
+
+<script>
+    const vue = new Vue({
+        el: '#app',
+        data(){
+            return {
+                searchString:'',
+                title:'',
+                content:''
+            }
+        },
+        methods: {
+            submit(){
+                //TODO
+                if(this.title==''){
+                    alert("标题不能为空");
+                }else if(this.content==''){
+                    alert("内容不能为空");
+                }else {
+                    let param=new URLSearchParams();
+                    param.append("title",this.title);
+                    param.append("content",this.content);
+                    axios({
+                        url: '/article/edit',
+                        method: 'post',
+                        data: param
+                    }).then((result)=>{
+                        if(result.data.code==200){
+                            alert("发布成功！");
+                            window.location.href='/blogs.html';
+                        }else {
+                            alert("发布失败！");
+                        }
+                    })
+                }
+
+            }
+        }
+    })
+</script>
+
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录页面</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.14/vue.min.js"></script>
+    
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="css/base.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/theme-chalk/index.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/index.min.js"></script>
+    <style>
+        #app{
+            height: 500px;
+            width: 400px;
+            border: 2px solid black;
+            border-radius: 10px;
+            margin-left: 35%;
+            margin-top:5%;
+            box-shadow: 30px 2px 4px rgba(0, 0, 0, .12), 30px 0 6px rgba(0, 0, 0, .04);
+            color:black;
+        }
+        #main{
+            width: 100%;
+            height:100%;
+        }
+
+        #registerBtn{
+            margin-left: 40%;
+        }
+        span{
+            color: black;
+            font-weight: bold;
+        }
+        #logo{
+            float: left;
+        }
+        #title{
+            float: left;
+            margin-left: 30%;
+            margin-top: 6%;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div id="main">
+        <el-container>
+            <el-header>
+                <div id="logo"><img src="imgs/zjnuLogo.gif" style="width: 50px;height: 50px;"></div>
+                <div id="title"><h2><span>注册</span></h2></div>
+            </el-header>
+            <el-main>
+                <el-form ref="user" :model="user"  :rules="rules">
+                    <el-form-item prop="uname">
+                        <span slot="label">用户名</span>
+                        <el-input v-model.trim="user.uname" type="text" prefix-icon="el-icon-user" placeholder="请输入用户名"></el-input>
+                    </el-form-item>
+                    <el-form-item prop="pwd">
+                        <span slot="label">密码</span>
+                        <el-input v-model.trim="user.pwd" type="password" placeholder="请输入密码"></el-input>
+                    </el-form-item>
+                    <el-form-item prop="confirmPassword">
+                        <span slot="label">请确认密码</span>
+                        <el-input v-model.trim="user.confirmPassword" type="password" placeholder="请再次输入密码"></el-input>
+                    </el-form-item>
+                    <el-form-item prop="register">
+                        <el-button type="primary" @click.prevent="register('user')" id="registerBtn">注册</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-main>
+            <el-footer>
+                <el-link icon="el-icon-thumb" href="login.html">返回登录页面</el-link>    
+            </el-footer>
+        </el-container>
+    </div>
+</div>
+<script>
+    const vue = new Vue({
+        el: '#app',
+        data(){
+            var validatePassword = (rule,value,callback)=>{
+                if(value===''){
+                    callback(new Error('密码不能为空！'));
+                }else if(value.length<6||value.length>20){
+                    callback(new Error('密码长度应在6-20之间'));
+                }else {
+                    if(this.$refs.user.validateField('confirmPassword'));
+                    callback();
+                }
+            };
+            var validateConfirmPassword = (rule,value,callback)=>{
+                if(value===''){
+                    callback(new Error('请再次输入密码！'));
+                }else if(value!==this.user.pwd){
+                    callback(new Error('两次输入的密码不一致！'));
+                }else {
+                    callback();
+                }
+            };
+            return {
+                user:{
+                    uname: "",
+                    confirmPassword:'',
+                    pwd: ""
+                },
+                rules:{
+                    uname:[
+                        {required:true,message:'请输入用户名',trigger:'blur',type:'string'},
+                    ],
+                    pwd:[
+                        {validator:validatePassword,required:true,trigger:'blur',type:'string'},
+                    ],
+                    confirmPassword:[
+                        {validator:validateConfirmPassword,required:true,trigger:'blur',type:'string'},
+                    ]
+
+                },
+                errors:{
+                    uname:'',
+                    pwd:'',
+                    confirmPassword:''
+                }
+            }
+        }
+        ,
+        methods:{
+            register(user){
+                this.$refs['user'].validate((valid)=>{
+                    if(valid){
+                        //TODO
+                        let param = new URLSearchParams();
+                        param.append('uname', this.user.uname);
+                        param.append('pwd', this.user.pwd);
+                        axios({
+                            method: 'post',
+                            url: '/user/register',
+                            data: param
+                        }).then((result)=> {
+                            if (result.data.code == 200) {
+                                alert("注册成功")
+                                window.location.href = "login.html";
+                            } else {
+                                this.$message.error(result.data.message);
+                            }
+                        })
+                    }else{
+                        console.log("error");
+                        return false;
+                    }
+                })
+            }
+        }
+    })
+</script>
+</body>
+</html>

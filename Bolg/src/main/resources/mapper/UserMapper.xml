@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wrz.mapper.UserMapper">
+    <resultMap id="UserMap" type="com.wrz.pojo.User">
+        <result property="registerTime" column="register_time"></result>
+    </resultMap>
+
+    <insert id="add">
+        insert into users (uname,pwd,nickname,register_time) values (#{uname},#{pwd},#{nickname},#{registerTime});
+    </insert>
+    <select id="GetAll" resultMap="UserMap">
+        select * from users;
+    </select>
+
+    <select id="selectByUsername" resultMap="UserMap">
+        select * from users where uname = #{uname};
+    </select>
+
+    <select id="seacherUserByUid" resultMap="UserMap">
+        select * from users where uid= #{uid};
+    </select>
+    <select id="countLikes" resultType="java.lang.Integer">
+        select  count(*) from likes where uid=#{uid};
+    </select>
+    <select id="countFavorites" resultType="java.lang.Integer">
+        select count(*) from favorites where uid=#{uid};
+    </select>
+</mapper>

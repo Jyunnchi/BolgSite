@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Article</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.14/vue.min.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="css/base.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/theme-chalk/index.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/index.min.js"></script>
+    <style>
+        .el-menu-item  a{
+            text-decoration: none;
+        }
+        .el-header .el-col{
+            /* border:3px solid black; */
+            height: 70px;
+        }
+        .el-header{
+            background-color: white;
+            border-bottom:3px solid black;
+            border-top:3px solid black;
+        }
+        .el-header a{
+            display: block;
+            margin: 15px 20px auto 45px;
+            /*border:3px solid green;*/
+            height: 64px;
+            width: 237px;
+        }
+        .el-main #row_title .el-col{
+            height:150px;
+        }
+        i{
+            display: block;
+        }
+
+        #app{
+            width: 100vw;
+            height: 100vh;
+            /* border:1px solid gold; */
+            clear: both;
+        }
+        #logo{
+            float: left;
+            padding-top: 10px;
+            /* border:1px solid gold; */
+        }
+        #rightAside{
+            border-left:3px solid black;
+        }
+        #leftAside{
+            border-right: 3px solid black;
+        }
+        #main_head{
+            width:100%;height:10%;
+            border-bottom: 3px solid black;
+            clear: both;
+        }
+        #main_head a{
+            display: block;
+            float:right;
+            width: 120px;
+            height: 50px;
+            /* border: 3px solid red; */
+        }
+        #public{
+            float: right;
+            border: 3px solid black;
+            display: block;
+            width: 120px;
+            height: 50px;
+        }
+        #title{
+            float: left;
+            /* border: 3px solid black; */
+            font-size:xx-large;
+            font-weight: 900;
+        }
+        button{
+            position:relative;
+        }
+        /* 扩大点击范围 */
+        button::before{
+            content:"";
+            position:absolute;
+            top:-10px;
+            left:-10px;
+            bottom:-10px;
+            right:-10px;
+        }
+        .card{
+            width: 250px;
+            border: 2px double rgb(0, 0, 0);
+            margin: 10px 30px auto 30px;
+        }
+        #articleBody{
+            margin-left: 15%;
+        }
+        #article_title{
+            /*border: 2px solid red;*/
+            font-size:xx-large;
+            font-weight: 900;
+            padding-bottom: 10px;
+        }
+        #article_info_author{
+            margin-top: 15px;
+            /*border: 2px solid red;*/
+            font-size: larger;
+        }
+        #article_info_time{
+            margin-top: 15px;
+            /*border: 2px solid red;*/
+            font-size: larger;
+        }
+        #article_content{
+            margin-top: 20px;
+            font-size: large;
+            font-weight: normal;
+        }
+        .icons :hover{
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div id="main"  style="height: 100%;">
+        <el-container>
+            <el-header height="90px">
+                <el-row>
+                    <el-col :span="6"><a href="blogs.html" title="主页" style="margin: 0 !important;"><div id="logo">
+                        <img src="imgs/ZJNU.jpg" >
+                    </div></a></el-col>
+                    <el-col :span="12"><div id="searchText">
+                        <el-input prefix-icon="el-icon-search" v-model="searchString" placeholder="搜索..." style="margin-top: 30px"
+                                  @keyup.enter.native="ToSearch()"></el-input>
+                    </div></el-col>
+                    <el-col :span="3">
+                        <a href="PersonalCenter.html" title="个人中心"><img src="imgs/个人中心icon.png" style="margin-top: 15px"></a>
+                    </el-col>
+                    <el-col :span="3">
+                        <a href="Edit.html" title="发布文章"><img src="imgs/发布icon.png" style="margin-top: 15px"> </a>
+                    </el-col>
+                </el-row>
+            </el-header>
+
+            <el-container style="margin-top: 5px;background-color: rgb(248, 249, 249);">
+                <el-aside id="leftAside" width="15%" style="background-color: white">
+                    <el-menu :default-openeds="['1', '3']">
+                        <el-menu-item index="1" >
+                            <a href="login.html">
+                                <i class="el-icon-position"></i>
+                                <span slot="title">登录页面</span>
+                            </a>
+                        </el-menu-item>
+                        <el-menu-item index="2">
+                            <a href="Edit.html">
+                                <i class="el-icon-edit-outline"></i>
+                                <span slot="title">编辑页面</span>
+                            </a>
+                        </el-menu-item>
+                        <el-menu-item index="3">
+                            <a href="register.html">
+                                <i class="el-icon-key"></i>
+                                <span slot="title">注册页面</span>
+                            </a>
+                        </el-menu-item>
+                        <el-menu-item index="4">
+                            <a href="PersonalCenter.html">
+                                <i class="el-icon-user"></i>
+                                <span slot="title">个人中心</span>
+                            </a>
+                        </el-menu-item>
+                    </el-menu>
+                </el-aside>
+                <el-main style="height: 500px;">
+                    <el-row>
+                        <el-col :span="17" id="articleBody">
+                            <el-card class="box-card" style=" background-color:white;border: 1px solid black;">
+                                <div style="border-bottom: 3px solid black;padding-bottom: 20px;">
+                                    <el-row>
+                                        <el-col :span="24" id="article_title">
+                                            {{article.title}}
+                                        </el-col>
+                                    </el-row>
+                                    <el-row>
+                                        <el-col :span="12" id="article_info_author">
+                                            作者：<span style="padding-left: 10px; font-weight: bold">{{author.uname}}</span>
+                                        </el-col>
+                                        <el-col :span="12" id="article_info_time">
+                                            发表时间：<span style="padding-left: 10px; font-weight: bold">{{article.publishTime}}</span>
+                                        </el-col>
+                                    </el-row>
+                                </div>
+                                <el-row style="padding-top: 20px">
+                                    <el-col :span="24">
+
+                                            {{article.content}}
+
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8" class="icons" style="margin-top: 30px">
+                                        <img  :src="likes_icon_index" @click="like()">
+                                        点赞：{{article.likes}}
+                                    </el-col>
+                                    <el-col :span="8" class="icons" style="margin-top: 30px">
+                                        <img  :src="favorite_icon_index" @click="favorite()">
+                                            收藏：{{article.favorites}}
+                                    </el-col>
+                                    <el-col :span="8" class="icons" v-if="can_delete" style="margin-top: 30px">
+                                        <img src="imgs/删除.png" @click="DeleteArticle()" >
+                                            删除
+                                    </el-col>
+                                </el-row>
+                            </el-card>
+                            <el-row style="margin-top: 20px">
+                                <el-col :span="20" id="comments">
+                                    <el-input
+                                            type="textarea"
+                                            :autosize="{ minRows: 2, maxRows: 4}"
+                                            placeholder="w我也来发表一篇评论！"
+                                            v-model="YourComment"
+                                    >
+                                    </el-input>
+                                </el-col>
+                                <el-col :span="4" id="showComments">
+                                    <el-button plain @click="CommentArticle()" style="height: 50px;width: 100%">评论</el-button>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24" id="comments" style="padding-top: 30px;">
+                                    <el-card class="box-card" style="background-color:rgb(248, 249, 249);border: 1px solid black;">
+                                        <div style="border-bottom: 3px solid black;padding-bottom: 20px;">
+                                            <h3>评论区</h3>
+                                        </div>
+                                        <ul v-for="(comment,index) in comments" :key="comment.cid">
+                                            <el-card class="box-card" style="margin-top: 5px; background-color:azure;border-bottom: 2px solid rgb(0,252,181);">
+                                                <div>{{comment.content}}</div>
+                                                <span style="float: right;padding-left: 10px">{{commenters[index].uname}}</span>
+                                                <span style="float: right;padding-left: 10px">{{comment.commentTime}}</span>
+                                            </el-card>
+                                        </ul>
+                                    </el-card>
+                                </el-col>
+                            </el-row>
+                        </el-col>
+                    </el-row>
+                </el-main>
+            </el-container>
+            <el-footer>
+
+            </el-footer>
+        </el-container>
+    </div>
+</div>
+
+
+<script>
+    const vue = new Vue({
+        el: '#app',
+        data(){
+            return {
+                searchString:'',
+                id:0,
+                articles:[{}],
+                article:{},
+                author:{
+
+                },
+                YourComment:"",
+                favorite_icon_index:"/imgs/收藏off.png",
+                likes_icon_index:"/imgs/赞off.png",
+                can_delete:false,
+                // 当前访问用户
+                customer:0,
+                comments:[],
+                commenters: [
+                    {
+                        uname:'',
+                    },
+                    {
+                        uname:'',
+                    },
+                    {
+                        uname:'',
+                    },
+                    {
+                        uname:'',
+                    }
+                ]
+            }
+        },
+        created(){
+            this.show();
+        },
+        methods: {
+            show(){
+                axios.get("/article/showAll").then(result=>{
+                    if(result.data.code==200){
+                        this.articles=result.data.data;
+                        let parameterURL=location.search.substring(1,location.search.length);
+                        parameterURL=parameterURL.split('=');
+                        let index=0;
+                        for(index in this.articles){
+                            if(this.articles[index].aid==parameterURL[1])break;
+                        }
+                        this.article=this.articles[index];
+                        this.id=index;
+                        this.getAuthor(this.article.uid);
+                        this.load_icon();
+                        this.load_like_icon();
+                        this.JudgeCanDelete();
+                        this.loadComments();
+                    }else {
+                        alert("文章加载失败");
+                    }
+
+                })
+            },
+            getAuthor(uid){
+                //TODO
+                let param=new URLSearchParams();
+                param.append("uid",uid);
+                axios({
+                    url: '/user/author',
+                    method: 'post',
+                    data: param
+                }).then(result=>{
+                    if(result.data.code==200){
+                        this.author=result.data.data;
+                        console.log(this.author);
+                    }else {
+                        alert(result.data.message);
+                    }
+                })
+            },
+            like(){
+                let param=new URLSearchParams();
+                param.append("aid",this.article.aid);
+                axios({
+                    method:"post",
+                    url:"/article/likeBlogs",
+                    data:param
+                }).then(result=>{
+                    if(result.data.code==200){
+                        alert("点赞成功");
+                        this.show();
+                    }else {
+                        alert("您已点赞！")
+                    }
+                })
+                this.likes_icon_index="/imgs/赞on.png";
+            },
+            favorite(){
+                //TODO 添加收藏
+                let param=new URLSearchParams();
+                param.append("aid",this.article.aid);
+                axios({
+                    method:"post",
+                    url:"/article/favoriteBlogs",
+                    data:param
+                }).then(result=>{
+                    if(result.data.code==200){
+                        alert("收藏成功");
+                        this.show();
+                    }else {
+                        alert("您已收藏！")
+                    }
+                })
+                this.favorite_icon_index="/imgs/收藏on.png";
+            },
+            load_icon(){
+                let param=new URLSearchParams();
+                param.append("aid",this.article.aid);
+                axios({
+                    url: '/article/JudgeFavorite',
+                    method: 'post',
+                    data: param
+                }).then(result=>{
+                    if(result.data.code==200){
+                        console.log("已收藏");
+                        this.favorite_icon_index="/imgs/收藏on.png";
+                    }  else if(result.data.code==250){
+                        console.log("未收藏");
+                        this.favorite_icon_index="/imgs/收藏off.png";
+                    }else alert("收藏加载失败！");
+                })
+            },
+            load_like_icon(){
+                let param=new URLSearchParams();
+                param.append("aid",this.article.aid);
+                axios({
+                    url: '/article/JudgeLike',
+                    method: 'post',
+                    data: param
+                }).then(result=>{
+                    if(result.data.code==200){
+                        console.log("已点赞",result.data);
+                        this.likes_icon_index="/imgs/赞on.png";
+                    }  else if(result.data.code==250){
+                        console.log("未点赞");
+                        this.likes_icon_index="/imgs/赞off.png";
+                    }else alert("点赞加载失败！");
+                })
+            },
+            DeleteArticle(){
+                //TODO
+                if(confirm("确定要删除本文章吗？")){
+                    let param=new URLSearchParams();
+                    param.append("aid",this.article.aid);
+                    axios({
+                        url: '/article/deleteArticle',
+                        method: 'post',
+                        data: param
+                    }).then(result=>{
+                        if(result.data.code=200){
+                            alert("删除成功");
+                        }else alert("删除失败");
+                    })
+                    window.location.href="/blogs.html";
+                }
+            },
+            JudgeCanDelete(){
+                //判断有无删除资格
+                axios.get("/user/customerUid").then(res=>{
+                    if(res.data.code==200){
+                        this.customer=res.data.data;
+                        console.log("customer",this.customer);
+                        console.log("author",this.author);
+                        // 如果是作者，那么有资格删除
+                        if(this.customer==this.article.uid){
+                            this.can_delete=true;
+                        }else this.can_delete=false;
+                        console.log(this.can_delete);
+                    }else alert("获取访客信息失败");
+                })
+            },
+            CommentArticle(){
+                if(this.YourComment=="")alert("评论不得为空");
+                else if(this.YourComment.length>=50)alert("评论不得超过50个字")
+                else {
+                    let param=new URLSearchParams();
+                    param.append("content",this.YourComment);
+                    param.append("aid",this.article.aid);
+                    axios({
+                        url:"/comment/makeComment",
+                        method:"post",
+                        data:param
+                    }).then(res=>{
+                        if(res.data.code==200){
+                            alert(res.data.message);
+                            this.loadComments();
+                            this.YourComment="";
+                        }else alert(res.data.message);
+                    })
+
+                }
+            },
+            loadComments(){
+                //TODO
+                let param=new URLSearchParams();
+                param.append("aid",this.article.aid);
+                axios({
+                    url: "/comment/loadComment",
+                    method: 'post',
+                    data: param
+                }).then(result=>{
+                    if(result.data.code=200){
+                        this.comments=result.data.data;
+                        this.loadCommenters();
+                    }else alert("评论加载失败");
+                })
+            },
+            loadCommenters(){
+                //TODO
+                let index=0;
+                let uids=new Array();
+                for (index=0;index<this.comments.length;index++){
+                    uids[index]=this.comments[index].uid;
+                }
+                axios({
+                    url: "/user/commenters",
+                    method: 'post',
+                    data: uids
+                }).then(result=>{
+                    if(result.data.code=200){
+                        this.commenters=result.data.data;
+                        console.log("commenters",this.commenters);
+                    }else alert("评论信息加载失败");
+                })
+            },
+        }
+    })
+</script>
+
+</body>
+</html>

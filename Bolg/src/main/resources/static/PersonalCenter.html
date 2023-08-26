@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Blogs</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.14/vue.min.js"></script>
+
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="css/base.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.7/theme-chalk/index.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.7/index.min.js"></script>
+<style>
+    .el-header .el-col{
+        /* border:3px solid black; */
+        height: 70px;
+    }
+    .el-header{
+        background-color: white;
+        border-bottom:3px solid black;
+        border-top:3px solid black;
+    }
+    .el-header a{
+        display: block;
+        margin: 20px 20px auto 52px;
+        /* border:3px solid green; */
+        height: 25px;
+        width: 25px;
+    }
+    .el-main #row_title .el-col{
+        height:150px;
+    }
+    i{
+        display: block;
+    }
+
+    #app{
+        width: 100vw;
+        height: 100vh;
+        /* border:1px solid gold; */
+        clear: both;
+    }
+    #logo{
+        float: left;
+        /* border:1px solid gold; */
+    }
+    .el-row{
+        margin-top: 10px;
+    }
+    .el-descriptions-item{
+        background-color: rgb(248, 249, 249);
+    }                  
+    .calendarDiv /deep/  .el-calendar-table .el-calendar-day{
+        height: 20px;
+    }
+    .el-col .el-card{
+        box-shadow: 10px 2px 4px rgba(0, 0, 0, .12), 10px 0 6px rgba(0, 0, 0, .04) !important;
+        margin-bottom: 20px;margin-left: 30px;
+    }
+    .articleCard .el-card{
+        margin-bottom: 5px;margin-left: 0;
+        width: 97%;
+        border: 1px solid black;
+    }
+    .box-card:hover{
+        cursor: pointer;
+        box-shadow:7px 5px 5px gray !important;
+
+    }
+</style>
+</head>
+<body>
+<div id="app">
+    <div id="main"  style="height: 100%; overflow-y: auto;">
+        <el-container>
+            <el-header height="90px">
+               <el-row>
+                   <el-col :span="6"><a href="blogs.html" title="主页" style="margin: 0 !important;"><div id="logo">
+                       <img src="imgs/ZJNU.jpg">
+                   </div></a></el-col>
+                   <el-col :span="12"><div id="searchText">
+                       <el-input  placeholder="用户中心" style="margin-top: 20px" :disabled="true"></el-input>
+                   </div></el-col>
+                    <el-col :span="3">
+                        <a href="PersonalCenter.html" title="个人中心"><img src="imgs/个人中心icon.png"></a>
+                    </el-col>
+                    <el-col :span="3">
+                        <a href="Edit.html" title="发布文章"><img src="imgs/发布icon.png"> </a>
+                    </el-col>
+               </el-row>
+            </el-header>
+            <el-main style=" background-color: rgb(248, 249, 249);">
+                <el-row>
+                    <el-col :span="10">
+                        <div class="calendarDiv" style="background-color:rgb(248, 249, 249) ; border: 2px solid black; box-shadow: 15px 2px 4px rgba(0, 0, 0, .12), 15px 0 6px rgba(0, 0, 0, .04);">      
+                            <el-calendar v-model="calendar">
+                            </el-calendar>
+                        </div>
+                    </el-col>
+                    <el-col :span="14">
+                        <el-card class="box-card" style="background-color:rgb(248, 249, 249);border: 1px solid black;">
+                            <el-descriptions title="用户信息">
+                                <el-descriptions-item label="用户名" style="font-weight: bold;">{{user.uname}}</el-descriptions-item>
+                                <el-descriptions-item label="点赞数" style="font-weight: bold;">{{likes}}</el-descriptions-item>
+                                <el-descriptions-item label="收藏数" style="font-weight: bold;">{{favorites}}</el-descriptions-item>
+                                <el-descriptions-item label="文章数" style="font-weight: bold;">{{own_articles}}</el-descriptions-item>
+                                <el-descriptions-item label="注册时间" style="font-weight: bold;">{{user.registerTime}}</el-descriptions-item>
+                            </el-descriptions>
+                        </el-card>
+                        <el-card class="box-card" style=" background-color:rgb(248, 249, 249);border: 1px solid black;">
+                            <div style="border-bottom: 3px solid black;padding-bottom: 20px;"> 
+                                <h3>我的文章</h3>
+                            </div>
+                            <div style="height:400px;margin-top: 10px; overflow: auto;" class="articleCard">
+                                <ul v-for="article in articles":key="article.aid" @click="showArticle(article.aid)">
+                                    <el-card class="box-card" style="margin-top: 5px; background-color:azure;border-bottom: 2px solid rgb(161, 211, 245);">
+                                        <li>
+                                            <h1>{{article.title}}</h1>
+                                        </li>
+                                        <li style="height: 40px; overflow: hidden;margin-top: 10px;">
+                                            <div style="word-wrap: break-word;">{{article.content}}</div>
+                                        </li>
+                                    </el-card>
+                                </ul>
+                            </div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="18">
+                        <el-card class="box-card" style=" background-color:rgb(248, 249, 249);border: 1px solid black;">
+                            <div style="border-bottom: 3px solid black;padding-bottom: 20px;">
+                                <h3>我的收藏</h3>
+                            </div>
+                            <div style="height:400px;margin-top: 10px; overflow: auto;" class="articleCard">
+                                <ul v-for="article in Favorite_articles":key="article.aid" @click="showArticle(article.aid)">
+                                    <el-card class="box-card" style="margin-top: 5px; background-color:azure;border-bottom: 2px solid rgb(161, 211, 245);">
+                                        <li>
+                                            <h1>{{article.title}}</h1>
+                                        </li>
+                                        <li style="height: 40px; overflow: hidden;margin-top: 10px;">
+                                            <div style="word-wrap: break-word;">{{article.content}}</div>
+                                        </li>
+                                    </el-card>
+                                </ul>
+                            </div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+            </el-main>
+        </el-container>
+    </div>
+</div>
+
+<script>
+    const vue = new Vue({
+        el: '#app',
+        data(){
+            return {
+                searchString:'',
+                calendar: new Date(),
+                user:{
+
+                },
+                articles:[
+
+                ],
+                Favorite_articles:[
+
+                ],
+                likes:0,
+                favorites:0,
+                own_articles:0
+            }
+        },
+        created(){
+              this.load_info();
+        },
+        methods: {
+            load_info(){
+                axios.get("/user/personalInfo").then(result=>{
+                    if(result.data.code==200){
+                        this.user=result.data.data;
+                            console.log(result.data.message);
+                        this.loadMyArticles();
+                        this.loadFavoriteArticles();
+                        this.countLikes();
+                        this.countFavorites();
+                    }else {
+                        alert(result.data.message);
+                    }
+                })
+            },
+            showArticle(aid){
+                window.location.href="article.html?aid="+aid;
+            },
+            loadMyArticles(){
+                axios.get("article/MyArticles").then(result=>{
+                    if(result.data.code==200){
+                        this.articles=result.data.data;
+                        let cnt=0;
+                        for(cnt in this.articles)cnt++;
+                        this.own_articles=cnt;
+                    }else {
+                        alert(result.data.message);
+                    }
+                })
+            },
+            loadFavoriteArticles(){
+                axios.get("article/FavoriteArticles").then(result=>{
+                    if(result.data.code==200){
+                        this.Favorite_articles=result.data.data;
+                    }else alert(result.data.message);
+                })
+            },
+            countLikes(){
+                axios.get("user/countLikes").then(res=>{
+                    if(res.data.code==200){
+                        this.likes=res.data.data;
+                    }else alert("点赞数据加载失败");
+                })
+            },
+            countFavorites(){
+                axios.get("user/countFavorites").then(res=>{
+                    if(res.data.code==200){
+                        this.favorites=res.data.data;
+                    }else alert("收藏数据加载失败");
+                })
+            }
+        }
+    })
+</script>
+
+</body>
+</html>

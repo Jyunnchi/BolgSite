@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wrz.mapper.ArticleMapper">
+    <resultMap id="ArticleMap" type="com.wrz.pojo.Article">
+        <result property="publishTime" column="publish_time"></result>
+    </resultMap>
+
+    <insert id="edit">
+        insert into articles (uid,title,content,publish_time) values (#{uid},#{title},#{content},#{publishTime});
+    </insert>
+    <delete id="deleteArticle">
+        set foreign_key_checks=0;
+        delete from articles where aid=#{aid};
+        set foreign_key_checks=1;
+    </delete>
+
+    <select id="showAll" resultMap="ArticleMap">
+        select * from articles;
+    </select>
+
+    <select id="judgeFavorite" resultType="com.wrz.pojo.FavoriteItem">
+            select * from favorites where aid=#{aid} and uid=#{uid};
+    </select>
+    <select id="selectByUid" resultMap="ArticleMap">
+        select * from articles where uid=#{uid};
+    </select>
+
+    <select id="selectFavoritesByUid" resultMap="ArticleMap">
+        select articles.aid,articles.uid,articles.title,articles.content,articles.publish_time,articles.likes,articles.favorites,articles.comments
+        from articles,favorites
+        where favorites.aid=articles.aid and favorites.uid=#{uid};
+    </select>
+    <select id="judgeLike" resultType="com.wrz.pojo.LikeItem">
+        select * from likes where aid=#{aid} and uid=#{uid};
+    </select>
+
+    <update id="addFavorite">
+        update articles set favorites=favorites+1 where aid=#{aid};
+    </update>
+    <update id="LikeBlog">
+        update articles set likes=likes+1 where aid=#{aid};
+    </update>
+
+    <insert id="addFavoriteToFavorites">
+        insert into favorites (aid,uid,favorite_time) values (#{aid},#{uid},#{favorite_time});
+    </insert>
+    <insert id="AddLikeToLikes">
+        insert into likes (aid,uid,like_time) values (#{aid},#{uid},#{likeTime});
+    </insert>
+</mapper>

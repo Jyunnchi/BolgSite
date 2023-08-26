@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录页面</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.14/vue.min.js"></script>
+    
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="css/base.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/theme-chalk/index.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/index.min.js"></script>
+    <style>
+        #app{
+            height: 420px;
+            width: 360px;
+            border: 2px solid black;
+            border-radius: 10px;
+            margin-left: 35%;
+            margin-top:5%;
+            box-shadow: 30px 2px 4px rgba(0, 0, 0, .12), 30px 0 6px rgba(0, 0, 0, .04);
+            color:black;
+        }
+        #main{
+            width: 100%;
+            height:100%;
+        }
+        #loginBtn{
+            margin-left: 40%;
+        }
+        .el-header h3{
+            margin-left: 45%;
+        }
+        span{
+            color: black;
+            font-weight: bold;
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div id="main">
+        <el-container>
+            <el-header>
+                <img src="imgs/zjnuLogo.gif" style="width: 50px;height: 50px;">
+                <h3><span>登录</span></h3>
+            </el-header>
+            <el-main>
+                <el-form ref="user" :model="user" :rules="rules">
+                    <el-form-item prop="uname">
+                        <span slot="label">用户名</span>
+                        <el-input v-model.trim="user.uname" type="text" prefix-icon="el-icon-user" placeholder="请输入用户名"></el-input>
+                    </el-form-item>
+                    <el-form-item prop="pwd">
+                        <span slot="label">密码</span>
+                        <el-input v-model.trim="user.pwd" type="password" placeholder="请输入密码"></el-input>
+                    </el-form-item>
+                    <el-form-item  prop="login">
+                        <el-button type="primary" @click="login('user')" id="loginBtn">登录</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-main>
+            <el-footer>
+                <a href="register.html" style="margin-right: 3%">注册</a>|<a href="register.html" style="margin-left: 3%">忘记密码</a>
+            </el-footer>
+        </el-container>
+    </div>
+</div>
+<script>
+    const vue = new Vue({
+        el: '#app',
+        data(){
+            return {
+                user:{
+                    uname: "",
+                    pwd: "",
+                },
+                rules:{
+                    uname:[
+                        {required:true,message:'请输入用户名',trigger:'blur',type:'string'},
+                        {max:10,message:'用户名过长！'}
+                    ],
+                    pwd:[
+                        {required:true,message:"请输入密码",trigger:'blur',type:'string'},
+                        {min:6,max:10,message:'请输入6-10位密码'}
+                    ]
+                }
+            }
+        }
+        ,
+        methods:{
+            login(user){
+                this.$refs['user'].validate((valid)=>{
+                    if(valid){
+                        //TODO
+                        let param=new URLSearchParams();
+                        param.append("uname",this.user.uname);
+                        param.append("pwd",this.user.pwd);
+                        axios({
+                            method:'post',
+                            url:'/user/login',
+                            data:param
+                        }).then((result)=>{
+                            if(result.data.code==200){
+                                window.location.href="/blogs.html";
+                            }else alert(result.data.message);
+                        })
+                    }else{
+                        console.log("error");
+                        return false;
+                    }
+                })
+            }
+        }
+    })
+</script>
+</body>
+</html>
